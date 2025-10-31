@@ -6,7 +6,6 @@ tag: ["firmware rev","chip extraction","badge"]
 categories: ["CTF","Embedded"]
 image: /assets/posts/2022-11-22/Screenshot_2.png
 ---
-<img src="/assets/posts/2022-11-22/Screenshot_7.png" /> 
 Extracting and reversing the firmware of the DC30 badge to beat the badge challenge!
 <!--more-->
 
