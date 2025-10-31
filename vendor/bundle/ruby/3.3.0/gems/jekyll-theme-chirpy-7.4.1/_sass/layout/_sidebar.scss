@@ -1,0 +1,217 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as mx;
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/placeholders';
+
+$btn-border-width: 3px;
+$btn-mb: 0.5rem;
+$sidebar-display: 'sidebar-display'; /* the attribute for sidebar display */
+
+#sidebar {
+  @include mx.pl-pr(0);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow-y: auto;
+  width: v.$sidebar-width;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border-color);
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+
+  @include bp.lt(bp.get(lg)) {
+    @include mx.slide;
+    transform: translateX(-#{v.$sidebar-width});
+    -webkit-transform: translateX(-#{v.$sidebar-width});
+    [#{$sidebar-display}] & { transform: translateX(0); }
+  }
+
+  @include bp.xxxl { width: v.$sidebar-width-large; }
+
+  %sidebar-link-hover { &:hover { color: var(--sidebar-active-color); } }
+
+  a { @extend %sidebar-links; }
+
+  /* === Avatar / Logo Section (bigger, centered, square) === */
+  #avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 11rem;
+    height: auto;
+    margin: 1.5rem auto 1.5rem; /* even top and bottom space */
+    border-radius: 0 !important;
+    overflow: visible;
+    background-color: transparent;
+    box-shadow: none;
+    transform: translateZ(0);
+    text-align: center;
+
+    @include bp.sm {
+      max-width: 12rem;
+      margin: 1.75rem auto 1.75rem;
+    }
+
+    img {
+      transition: transform 0.5s ease;
+      border-radius: 0 !important;
+      object-fit: contain;
+      width: 100%;
+      height: auto;
+
+      &:hover { transform: scale(1.05); }
+    }
+  }
+
+  /* === Profile wrapper; no title, centered subtitle === */
+.profile-wrapper {
+  @extend %clickable-transition;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  margin-top: 0;
+  margin-bottom: 1.5rem;   /* ← this creates space before the nav; same as #avatar gap */
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  @include bp.sm { margin-bottom: 1.75rem; } /* keep in step with #avatar sm gap */
+}
+
+/* Title hidden */
+.site-title { display: none !important; }
+
+/* === Subtitle (no external spacing; wrapper handles it) === */
+.site-subtitle {
+  font-size: 95%;
+  color: var(--site-subtitle-color);
+  margin-top: 0;
+  margin-bottom: 0;        /* ← let .profile-wrapper control the bottom spacing */
+  line-height: 1.35;
+  word-spacing: 1px;
+  text-align: center;
+  user-select: none;
+  max-width: 12rem;
+}
+
+
+  /* === Navigation === */
+  ul {
+    margin-top: 0; /* ensure nav aligns cleanly under subtitle */
+    margin-bottom: 2rem;
+
+    li.nav-item {
+      opacity: 0.9;
+      width: 100%;
+
+      @include mx.pl-pr(1.5rem);
+      @include bp.xxxl { @include mx.pl-pr(2.75rem); }
+
+      a.nav-link {
+        @include mx.pt-pb(0.6rem);
+        display: flex;
+        align-items: center;
+        border-radius: 0.75rem;
+        font-weight: 600;
+
+        &:hover { background-color: var(--sidebar-hover-bg); }
+
+        i {
+          font-size: 95%;
+          opacity: 0.8;
+          margin-right: 1.5rem;
+        }
+
+        span { font-size: 90%; letter-spacing: 0.2px; }
+      }
+
+      &.active .nav-link {
+        color: var(--sidebar-active-color);
+        background-color: var(--sidebar-hover-bg);
+        span { opacity: 1; }
+      }
+
+      &:not(:first-child) { margin-top: 0.25rem; }
+    }
+  }
+
+  /* === Footer Buttons === */
+  .sidebar-bottom {
+    padding-left: 2rem;
+    padding-right: 1rem;
+    margin-bottom: 1.5rem;
+
+    @include bp.xxxl {
+      padding-left: 2.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    $btn-size: 1.75rem;
+
+    %button {
+      width: $btn-size;
+      height: $btn-size;
+      margin-bottom: $btn-mb;
+      border-radius: 50%;
+      color: var(--sidebar-btn-color);
+      background-color: var(--sidebar-btn-bg);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:not(:focus-visible) { box-shadow: var(--sidebar-border-color) 0 0 0 1px; }
+      &:hover { background-color: var(--sidebar-hover-bg); }
+    }
+
+    a {
+      @extend %button;
+      @extend %sidebar-link-hover;
+      @extend %clickable-transition;
+
+      &:not(:last-child) {
+        margin-right: v.$sb-btn-gap;
+        @include bp.xxxl { margin-right: v.$sb-btn-gap-lg; }
+      }
+    }
+
+    i { line-height: $btn-size; }
+
+    #mode-toggle {
+      @extend %button;
+      @extend %sidebar-links;
+      @extend %sidebar-link-hover;
+    }
+
+    .icon-border {
+      @extend %no-cursor;
+      @include mx.ml-mr(calc((v.$sb-btn-gap - $btn-border-width) / 2));
+      background-color: var(--sidebar-btn-color);
+      content: '';
+      width: $btn-border-width;
+      height: $btn-border-width;
+      border-radius: 50%;
+      margin-bottom: $btn-mb;
+
+      @include bp.xxxl {
+        @include mx.ml-mr(calc((v.$sb-btn-gap-lg - $btn-border-width) / 2));
+      }
+    }
+  }
+}
+
+[#{$sidebar-display}] {
+  #main-wrapper {
+    @include bp.lt(bp.get(lg)) { transform: translateX(v.$sidebar-width); }
+  }
+}
