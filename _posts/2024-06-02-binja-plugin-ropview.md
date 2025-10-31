@@ -4,7 +4,7 @@ date: 2024-06-02
 description: "A technical post on my new gadget analysis framework."
 tag: ["unicorn","pandas","emulation","tool"]
 categories: ["Emulation","Tool"]
-image: /assets/posts/2024-06-02/sc1.png
+image: /assets/posts/2024-06-02/semantic_search_demo.gif
 ---
 
 Technical explanations and concepts of RopView, a plugin made for BinaryNinja that does gadget analysis. This blog post describes the technical components of [this tool](https://github.com/elbee-cyber/RopView).
