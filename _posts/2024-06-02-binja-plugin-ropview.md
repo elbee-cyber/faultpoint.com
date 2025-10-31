@@ -3,7 +3,7 @@ title: "Tool Release: RopView"
 date: 2024-06-02
 description: "A technical post on my new gadget analysis framework."
 tag: ["unicorn","pandas","emulation","tool"]
-categories: ["Emulation","Tool"]
+categories: ["Emulation","Tool Release"]
 image: /assets/posts/2024-06-02/semantic_search_demo.gif
 ---
 
