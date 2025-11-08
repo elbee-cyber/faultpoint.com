@@ -4,6 +4,7 @@ date: 2023-04-25
 description: "Modern ransomware attacks often greatly affect civilian life and government operations, it is a geopolitical issue."
 tag: ["non-technical"]
 categories: ["Non-technical"]
+image: /assets/posts/2023-04-25/pipeline.jpeg
 ---
 
 Modern ransomware attacks often greatly affect civilian life and government operations — it is a geopolitical issue.  

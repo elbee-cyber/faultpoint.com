@@ -15,7 +15,7 @@ redirect_from:
     - /post/2025-03-25-8-cves-on-the-wnr854t-junkyard/#807
     - /post/2025-03-25-8-cves-on-the-wnr854t-junkyard/#808
     - /post/2025-03-25-8-cves-on-the-wnr854t-junkyard/#809
-image: /assets/posts/2025-03-25/10.png
+image: /assets/posts/2025-03-25/2.png
 ---
 
 A subsect of student members from the Mason Competitive Cyber Club conducted research on an EOL device in preparation for the Junkyard contest at DistrictCon Year 0, unearthing eight new CVEs.

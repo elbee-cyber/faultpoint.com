@@ -4,6 +4,7 @@ date: 2023-03-23
 description: "Reversing challenge from Battelle showcasing angr's file simulation feature."
 tag: ["angr","reversing","CTF","file-sim"]
 categories: ["CTF"]
+image: /assets/posts/2023-03-23/Screenshot_8.png
 ---
 
 Reversing challenge from Battelle showcasing angr's file simulation feature!
