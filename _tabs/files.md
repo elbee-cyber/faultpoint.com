@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Files/PDFs
+title: Files
 icon: fas fa-download
 order: 6
 ---
