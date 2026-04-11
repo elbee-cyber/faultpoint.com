@@ -9,6 +9,9 @@ tag: [
 ]
 
 categories: ["Hardware"]
+redirect_from:
+    - /post/unlisted-31d6cfe0d16ae931b73c59d7e0c089c0
+
 image: /assets/posts/2026-04-09/rand1.jpeg
 ---
 
