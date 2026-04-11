@@ -192,6 +192,7 @@ Verify firmware without external PSU:
 Ensure PSU is physically not connected, then power with your chipwhisperer (or USB) and confirm your 20-pin connections still work with your firmware. <a href="https://github.com/elbee-cyber/STM32F401xC-SCA">Here is the jupyter notebook I wrote specifically for this target.</a>
 
 Final circuit:
+
 ![](/assets/posts/2026-04-09/18.png)
 ![](/assets/posts/2026-04-09/19.jpeg)
 *Note: don't test with the PSU yet.*
