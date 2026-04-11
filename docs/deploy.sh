@@ -1,6 +1,6 @@
 #!/bin/bash
 bundle exec jekyll clean
-JEKYLL_ENV=production bundle exec jekyll build
+JEKYLL_ENV=production bundle exec jekyll build --drafts
 rm -rf docs
 cp -a _site/. docs/
 touch docs/.nojekyll
