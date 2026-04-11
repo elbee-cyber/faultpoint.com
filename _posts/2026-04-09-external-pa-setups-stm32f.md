@@ -1,7 +1,6 @@
 ---
 title: "Designing Low-side Capture Setups for Power Analysis on Embedded Targets with Internal Regulators"
 subtitle: "A Practical Guide to Power Analysis Circuit Design and Maximizing SNR"
-hidden: true
 date: 2026-04-09
 description: "No UFO Board? No problem. A practical guide on creating capture setups for power analysis on arbitrary development boards, as well as overcoming internal regulators, and maximizing SNR. We'll go over overriding the STM32F401xC's IR for measurements, which does not have much clear public research, to serve as a general guide for building target-focused circuits that make any target work with your Chipwhisperer."
 tag: [
