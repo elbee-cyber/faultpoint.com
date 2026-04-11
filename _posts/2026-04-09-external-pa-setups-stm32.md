@@ -196,7 +196,7 @@ Final circuit:
 
 <a name="sweeping"></a>
 ### Regulator Sweeping
-Different processes in characterization (finding the right values) for models in fault injection and power analysis are known as "sweeping". This is no different. Here we are characterizing for two things:
+The process of experimenting with values in characterization (finding the right set of values) for models in fault injection and power analysis are known as "sweeping". This is no different. Here we are characterizing for two things:
 - The PSU
 - The shunt trimpot
 
