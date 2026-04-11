@@ -3,7 +3,7 @@ title: "Designing Low-side Capture Setups for Power Analysis on Embedded Targets
 subtitle: "A Practical Guide to Power Analysis Circuit Design and Maximizing SNR"
 hidden: true
 date: 2026-04-09
-description: "No UFO Board? No problem. A practical guide on creating capture setups for power analysis on arbitrary development boards, as well as overcoming internal regulators, and maximizing SNR. We'll go over overriding the STM32F401xC's IR for measurements, which does not have much clear public research, to serve as a general guide for building target-focused circuits that make any target work with your chipwhisperer."
+description: "No UFO Board? No problem. A practical guide on creating capture setups for power analysis on arbitrary development boards, as well as overcoming internal regulators, and maximizing SNR. We'll go over overriding the STM32F401xC's IR for measurements, which does not have much clear public research, to serve as a general guide for building target-focused circuits that make any target work with your Chipwhisperer."
 tag: [
     "stm32","side-channel-analysis","power-analysis","hardware-hacking","embedded","chipwhisperer"
 ]
@@ -11,7 +11,7 @@ categories: ["Hardware"]
 image: /assets/posts/2026-04-09/rand1.jpeg
 ---
 
-No UFO Board? No problem. A practical guide on creating capture setups for power analysis on arbitrary development boards, as well as overcoming internal regulators, and maximizing SNR. We'll go over overriding the STM32F401xC's IR for measurements, which does not have much clear public research, to serve as a general guide for building target-focused circuits that make any target work with your chipwhisperer.
+No UFO Board? No problem. A practical guide on creating capture setups for power analysis on arbitrary development boards, as well as overcoming internal regulators, and maximizing SNR. We'll go over overriding the STM32F401xC's IR for measurements, which does not have much clear public research, to serve as a general guide for building target-focused circuits that make any target work with your Chipwhisperer.
 <!--more-->
 
 # Table of Contents
@@ -32,7 +32,7 @@ No UFO Board? No problem. A practical guide on creating capture setups for power
 
 <a name="intro"></a>
 ### Intro
-It should be easy to make any target work with your chipwhisperer or other capture equipment. After all, alot of the complexities are still in writing your exploit code, actually reverse engineering your target device, and interfacing it in a way that makes sense, such as finding an interesting code section to glitch, drafting different leakage models, or finding a reliable trigger event/chain. While different power analysis attack/verification models exist and are detailed extensively online, I have found little information when it comes to actually developing a hardware circuit for embedded targets that lets you get to the point you can start to develop these attacks, especially when it comes to devices where measuring the voltage drop across a single VCC pin isn't good enough for meaningful leakage. 
+It should be easy to make any target work with your Chipwhisperer or other capture equipment. After all, a lot of the complexities are still in writing your exploit code, actually reverse engineering your target device, and interfacing it in a way that makes sense, such as finding an interesting code section to glitch, drafting different leakage models, or finding a reliable trigger event/chain. While different power analysis attack/verification models exist and are detailed extensively online, I have found little information when it comes to actually developing a hardware circuit for embedded targets that lets you get to the point you can start to develop these attacks, especially when it comes to devices where measuring the voltage drop across a single VCC pin isn't good enough for meaningful leakage. 
 
 A majority of the posts I have seen assume the following:
 - Hardware setup already completed
@@ -149,7 +149,7 @@ I recommend you flash your target with the firmware you want to perform the atta
 ![](/assets/posts/2026-04-09/13.jpg)
 *If flux was applied, remember to apply remover solution to avoid bridging VCAP to the ground pad. Verify with your DMM this is not the case.*
 
-Next I prefer to add connections on the protoboard for the actual chipwhisperer 20-pin header before actually building the measurement circuit. For my setup, I ended up doing the following:
+Next I prefer to add connections on the protoboard for the actual Chipwhisperer 20-pin header before actually building the measurement circuit. For my setup, I ended up doing the following:
 - Blackpill 3V3 -> CW 3V3
 - Blackpill GND -> CW GND
 - Blackpill A8 (Added clock output) -> CW HS1
@@ -160,12 +160,12 @@ Next I prefer to add connections on the protoboard for the actual chipwhisperer 
 
 Next we can implement the measurement circuit. Remember we want to design this with minimal physical distance on the high side and low side of the shunt resistor. A couple subtle tips:
 - My perfboard does not have connected rails. If this is the case for you, you can place single copper strands to create solder bridges (bridges won't hold over the perfboard silk no matter how big you make them, trust me).
-- Use an SMA connector and coax cable for the measurement signal to the chipwhisperer, again to prevent EMI. This does not matter as much for the power supply line, but I did so here as well.
+- Use an SMA connector and coax cable for the measurement signal to the Chipwhisperer, again to prevent EMI. This does not matter as much for the power supply line, but I did so here as well.
 - Measure out the path on your perfboard ahead of time so as to use the minimum amount of holes for your components and therefore minimal distance.
 - Trying to thread the VCAP strand through a thru-hole risks tearing it off the pad. Tape it against your hole and solder over it. Remove tape and cut the excess wire with an exacto knife or scalpal.
-- **All grounds must be shared with the chipwhisperer to prevent ground loops. Your entire measurement circuit should share a ground with your chipwhisperer, the CW will take measurements relative to its own ground. The PSU and blackpill should both have a path to chipwhisperer GND.**
+- **All grounds must be shared with the Chipwhisperer to prevent ground loops. Your entire measurement circuit should share a ground with your Chipwhisperer, the CW will take measurements relative to its own ground. The PSU and blackpill should both have a path to Chipwhisperer GND.**
 
-Do note the PSU is being used to override the regulator, not power the 3V3 rail. This should be done by the chipwhisperer or another power source. I also prefer using a trimpot instead of a plain resistor for the shunt measurement and I am not sure why it isn't talked about more. **Later in regulator sweeping you will see that we are going to be looking for a magic resistance value that offers the highest manageable resistance value, while not causing so much of a voltage drop that the internal regulator turns back on. A trimpot is useful here because you can continuously tune the resistance value via the wiper, without having to keep resoldering resistors.**
+Do note the PSU is being used to override the regulator, not power the 3V3 rail. This should be done by the Chipwhisperer or another power source. I also prefer using a trimpot instead of a plain resistor for the shunt measurement and I am not sure why it isn't talked about more. **Later in regulator sweeping you will see that we are going to be looking for a magic resistance value that offers the highest manageable resistance value, while not causing so much of a voltage drop that the internal regulator turns back on. A trimpot is useful here because you can continuously tune the resistance value via the wiper, without having to keep resoldering resistors.**
 
 In general the measurement circuit looks like this: PSU -> 100nf Bypass -> Shunt Trimpot -> CW Measure -> Removed decap -> VCAP.
 
@@ -189,7 +189,7 @@ Measurement signal path and shunt resistance:
 DMM in resistance mode, probe PSU and CW Measure. You should read the resistance value, which you can change on your trimpot.
 
 Verify firmware without external PSU:
-Ensure PSU is physically not connected, then power with your chipwhisperer (or USB) and confirm your 20-pin connections still work with your firmware. <a href="https://github.com/elbee-cyber/STM32F401xC-SCA">Here is the jupyter notebook I wrote specifically for this target.</a>
+Ensure PSU is physically not connected, then power with your Chipwhisperer (or USB) and confirm your 20-pin connections still work with your firmware. <a href="https://github.com/elbee-cyber/STM32F401xC-SCA">Here is the jupyter notebook I wrote specifically for this target.</a>
 
 Final circuit:
 
@@ -212,7 +212,7 @@ I recommend you start by disconnecting the PSU and powering the target. Measure 
 ![](/assets/posts/2026-04-09/20.jpeg)
 *The PSU is on in this picture, but the trimpot resistance is so high the LDO didn't turn off.*
 
-Start with your trimpot on the minimum resistance and turn on your PSU. Start with a supply voltage that is slightly over recommended. I originally started with 1.3V. Notice how the target is a 1.2V domain, with its maximum at 1.32V, which this is still under. Start small. Take the voltage measurement with your chipwhisperer and increase the PSU voltage coarsely, until the DMM no longer reads the regulator voltage, but a drop off variation of your external supply voltage.
+Start with your trimpot on the minimum resistance and turn on your PSU. Start with a supply voltage that is slightly over recommended. I originally started with 1.3V. Notice how the target is a 1.2V domain, with its maximum at 1.32V, which this is still under. Start small. Take the voltage measurement with your Chipwhisperer and increase the PSU voltage coarsely, until the DMM no longer reads the regulator voltage, but a drop off variation of your external supply voltage.
 ![](/assets/posts/2026-04-09/21.jpeg)
 *PSU=1.60V, Signal=1.53V, clear the internal regulator is off.*
 
@@ -220,7 +220,7 @@ Continue increasing your trimpot to the desired resistor value and performing th
 
 <a name="pa"></a>
 ### Power Analysis and Window Tuning
-Congratulations. This post was meant to serve as a general guide on taking measurements of any external and non-target designed board using your chipwhisperer. We finished that part. You can now continue with your relevant attack goals. If you have any further issues with SNR, check that all decoupling capacitors for your specific domain were removed and the appropriate bypass capacitor is provided to your power supply. The remainder of this post will talk about my target specifically. My jupyter notebook has the following code blobs designed to leak SPA firmware from the STM32F401xC:
+Congratulations. This post was meant to serve as a general guide on taking measurements of any external and non-target designed board using your Chipwhisperer. We finished that part. You can now continue with your relevant attack goals. If you have any further issues with SNR, check that all decoupling capacitors for your specific domain were removed and the appropriate bypass capacitor is provided to your power supply. The remainder of this post will talk about my target specifically. My jupyter notebook has the following code blobs designed to leak SPA firmware from the STM32F401xC:
 - Verification firmware works
 - Verification trigger signal is being spotted
 - Verification we are able to RST the Blackpill
