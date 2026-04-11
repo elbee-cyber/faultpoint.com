@@ -88,7 +88,8 @@ This is the most important section which I'm sure is unsurprising. When you are 
 - Power Supply / Power Management / Power Supply Scheme
     - Describes your VCC feed, how it interacts with the internal regulator if present, and so on. Describes what modes exists, pins connected to the VCC network, and if any bypass exists.
 - Operating Conditions
-    - Contains the internal voltage for your regulator. This will come in useful when we try to bypass it and help us know the safe maximum voltages we can safely apply externally on the pin (explained later). 
+    - Contains the internal voltage for your regulator. This will come in useful when we try to bypass it and help us know the safe maximum voltages we can safely apply externally on the pin (explained later).
+     
     ![](/assets/posts/2026-04-09/10.jpg) *VCORE has an internal 1.2V domain*
 - Pinout
     - I always love to use this to label a screenshot of my actual taget with VCC and VCORE pins.
@@ -96,6 +97,7 @@ This is the most important section which I'm sure is unsurprising. When you are 
     - Helps illustrate interaction between VCC, internal voltage domain, and remainder of internal core. ![](/assets/posts/2026-04-09/11.jpg)
 - External Capacitors
     - Tells you what capacitor values are used to stabilize the regulator and how to account for changes in the circuit. 
+
     ![](/assets/posts/2026-04-09/9.png) *Note how for our target, a single 100nF bypass cap should be used when providing an external supply.*
 
 In finding this information, we have found most of the details we will need to build our measurement circuit. There is of course additional information you're likely to find not mentioned here that will prove extremely useful to your setup, and I will mention some of the specifics for the STM32F401xC later. It is at this point I recommend you label a picture of your actual target pinout for your own sanity (trust). You can find pin 1 by identifying the dot and verify your VCC pins as well as the decoupling capacitors connected to them by using your DMM in continuity mode. Keep in mind the decoupling capacitors for VCAP and VDD will be found as physically close to the pin as possible to provide the best noise reduction.
