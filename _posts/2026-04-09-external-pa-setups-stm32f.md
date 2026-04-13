@@ -28,7 +28,7 @@ No UFO Board? No problem. A practical guide on creating capture setups for power
 8. [Circuit Design](#circuit)
 9. [Regulator Sweeping](#sweeping)
 10. [Power Analysis and Window Tuning (SPA works with the IR off?!)](#pa)
-11. [Formally Proving SNR is Better with the STM32F Regulator Off](#proof)
+11. [Formally Proving SNR is Better with the STM32F Regulator Bypassed](#proof)
 12. [Key Takeaways](#takeaways)
 13. [Gallery](#gallery)
 14. [References](#references)
@@ -137,9 +137,9 @@ We already know quite a bit about our target's internal voltage regulator. We al
 *Perhaps the most useful diagram in this post: https://chipwhisperer.readthedocs.io/en/latest/cw_tips_tricks/advanced_usage/regulators.html*
 
 ![](/assets/posts/2026-04-09/16.png)
-*The factory, regulator off, BYPASS_REG is not present on our target, but the datasheet specifies we can supply voltage through the VCAP pins. It also confirms the external voltage supplied is not scaled to the internal expected operating voltage of the LDO and that we should do that, so naturally we won't.*
+*The factory, regulator off, BYPASS_REG is not present on our target, but the datasheet specifies we can supply voltage through the VCAP pins. It also confirms the external voltage supplied is should be scaled to the expected internal operating voltage as it bypasses the regulator entirely. In conclusion, we should do that, so naturally we won't.*
 
-This confirms that if we provide a slightly higher voltage to the VCAP output, the regulator will not operate since it is being fed a voltage higher than it is capable of regulating. How do we find this perfect voltage without permanently damaging the chip? I'll go over this in a simple method called "regulator sweeping". Although I just made up the name for this post, I am confident it has been done a thousand times. We now have a way to turn the regulator off and have enough information to start drafting (and I recommend you draft first) a measurement circuit. The most important part is the VCAP pad where the 2.2uf decoupling capacitor used to be. It will be responsible for the following:
+This confirms that if we provide a slightly higher voltage to the VCAP output, the regulator will not operate since it is being fed a voltage higher than it is capable of regulating. How do we find this perfect voltage without permanently damaging the chip? I'll go over this in a simple method called "regulator sweeping". Although I just made up the name for this post, I am confident it has been done a thousand times. We now have a way to bypass the regulator and have enough information to start drafting (and I recommend you draft first) a measurement circuit. The most important part is the VCAP pad where the 2.2uf decoupling capacitor used to be. It will be responsible for the following:
 - High side: PSU -> 100nf bypass -> Shunt
 - Low side: Shunt -> CW Measure -> VCAP
 
@@ -215,17 +215,17 @@ The process of iteratively testing values during the characterization phase (fin
 - The PSU load
 - The resistance value of the trimpot
 
-Set the PSU too low, and the internal regulator remains on. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO off, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't disable (or effectively disable, refer back to [the voltage domain diagram to see what I mean by that](#powerdomain)) the regulator (even though the PSU voltage is well beyond specified operating conditions).
+Set the PSU too low, and the internal regulator remains on. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO bypassed, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't disable (or effectively disable, refer back to [the voltage domain diagram to see what I mean by that](#powerdomain)) the regulator (even though the PSU voltage is well beyond specified operating conditions).
 
 I recommend you start by disconnecting the PSU and powering the target. Measure between GND and CW Measure with your DMM in voltage mode. You should read a value close to the specified internal domain voltage from the datasheet.
 ![](/assets/posts/2026-04-09/20.jpeg)
-*The PSU is on in this picture, but the trimpot resistance is so high the LDO didn't turn off.*
+*The PSU is on in this picture, but the trimpot resistance is so high the LDO didn't get overridden.*
 
 Start with your trimpot on the minimum resistance and turn on your PSU. Start with a supply voltage that is slightly over recommended. I originally started with 1.3V. Notice how the target is a 1.2V domain, with its maximum at 1.32V, which this is still under. Start small. Take the voltage measurement with your Chipwhisperer and increase the PSU voltage coarsely, until the DMM no longer reads the regulator voltage, but a drop off variation of your external supply voltage.
 ![](/assets/posts/2026-04-09/21.jpeg)
-*PSU=1.60V, Signal=1.53V, clear the internal regulator is off.*
+*PSU=1.60V, Signal=1.53V, clear the internal regulator is bypassed.*
 
-Continue increasing your trimpot to the desired resistor value and performing this test again until you reach an LDO turn off with the desired resistance value. A higher resistance will produce a stronger signal. Do note that the goal is *not* to get a high reading on your DMM. As long as the voltage is even slightly higher than the specified operating voltage the regulator has been turned off. After this process, you should have your final circuit and the perfect external supply voltage and resistance values.
+Continue increasing your trimpot to the desired resistor value and performing this test again until you reach an LDO override with the desired resistance value. A higher resistance will produce a stronger signal. Do note that the goal is *not* to get a high reading on your DMM. As long as the voltage is even slightly higher than the specified operating voltage the regulator has been bypassed. After this process, you should have your final circuit and the perfect external supply voltage and resistance values.
 
 <a name="pa"></a>
 ### Power Analysis and Window Tuning
@@ -242,20 +242,20 @@ It is then followed by scope configuration where the number of samples and offse
 5. Basic SPA Attack (requires good SNR)
 6. SAD SPA Attack (requires okay SNR)
 
-The goal of this post is not to go over basic power analysis concepts, but instead the actual hardware setup that is frequently not covered. For that reason this section of the post will be relatively short and aim only to prove that we have successfully leaked the password from the Blackpill STM32F401xC firmware using this setup. The success of this attack depends on your physical capture setup. I recommend you first narrow your capture window before trying the SAD variation of the attack. To do this, keep the defaults and take a capture with a completely incorrect password (the first character is any character besides "t" and the password is 8 characters long) and the correct password. Note the trace number where the traces start to drastically diverge. Note the trace number where they return to each other. This is your `scope.adc.offset` and `scope.adc.samples` respectively (samples is actually the full capture window, but for SPA this is usually good enough). The finished attack here takes just over 200 traces for the 8-byte password (LDO off):
+The goal of this post is not to go over basic power analysis concepts, but instead the actual hardware setup that is frequently not covered. For that reason this section of the post will be relatively short and aim only to prove that we have successfully leaked the password from the Blackpill STM32F401xC firmware using this setup. The success of this attack depends on your physical capture setup. I recommend you first narrow your capture window before trying the SAD variation of the attack. To do this, keep the defaults and take a capture with a completely incorrect password (the first character is any character besides "t" and the password is 8 characters long) and the correct password. Note the trace number where the traces start to drastically diverge. Note the trace number where they return to each other. This is your `scope.adc.offset` and `scope.adc.samples` respectively (samples is actually the full capture window, but for SPA this is usually good enough). The finished attack here takes just over 200 traces for the 8-byte password (LDO bypassed):
 ![](/assets/posts/2026-04-09/23.gif)
 
 <a name="proof"></a>
-### Formally Proving SNR is Better with the STM32F Regulator Off
+### Formally Proving SNR is Better with the STM32F Regulator Bypassed
 #### A Note on the STM32F401xC's LDO
 **The SPA attack provided here still works with the STM32F internal regulator activated.**
-So why does SPA work with the regulator still on? Does SNR actually improve with the regulator off at all? Will this proof section make my professor finally proud of me? We'll answer some of these questions definitively here. As it turns out, yes, for this specific target, there is enough noise that this attack works with the internal regulator still operating (at least for SPA). However, there does exist a significant SNR advantage with it off. I tried to prove this empirically with a simple experiment. Recall (or note) the following SNR definition:
+So why does SPA work with the regulator still in control? Does SNR actually improve with the regulator bypassed at all? Will this proof section make my professor finally proud of me? We'll answer some of these questions definitively here. As it turns out, yes, for this specific target, there is enough noise that this attack works with the internal regulator still operating (at least for SPA). However, there does exist a significant SNR advantage with it bypassed. I tried to prove this empirically with a simple experiment. Recall (or note) the following SNR definition:
 
 ![](/assets/posts/2026-04-09/24.jpeg)
 *The first definition of SNR is all that is relevant.*
 
 The following is the experiment design I ran:
-- Regulator on and regulator off control groups, each averages the results of the following over 10 iterations:
+- Regulator on and regulator bypassed control groups, each averages the results of the following over 10 iterations:
     - Capture and average 20 reference traces
     - Capture and average 20 traces for the current character
     - Compute the SAD against averaged reference mean
@@ -291,7 +291,7 @@ Let's first note the SNR between the two groups. With the regulator override, th
     - Maintaining constant output voltage reduces SNR.
 - Consider a trimpot shunt over a resistor to make verification and future shunt modification easier!
 
-Future Research: While I haven't seen anything public on this chip in regards to power analysis via regulator turn off, for future research I plan to target more under-researched  and complex embedded appliance targets such as automotive chips. I was previously inspired to do more automotive research and now share this specific desire thanks to <a href="https://bedri-zija.github.io/mspm0g3507-cpa">Bedri Zija</a>.
+Future Research: While I haven't seen anything public on this chip in regards to power analysis via regulator override, for future research I plan to target more under-researched  and complex embedded appliance targets such as automotive chips. I was previously inspired to do more automotive research and now share this specific desire thanks to <a href="https://bedri-zija.github.io/mspm0g3507-cpa">Bedri Zija</a>.
 
 Thanks for reading, I hope this guide proves useful!
 
