@@ -80,6 +80,7 @@ In most classic setups you might see someone lifting one of multiple VCC legs on
 Luckily, the majority of chips have another option of pin we can measure. Most chips run I/O and other peripherals at 3V3, but the internal core logic operates on a lower voltage domain, such as 1.2V. To be a bit bold, **every real mainstream embedded target you'll encounter in your hardware research is going to do this**. This means while you may power your board with 3V3, there is an LDO within the silicon that brings the supplied voltage down to the regulated operating specification of the core logic.
 
 <a name="powerdomain"></a>
+<br>
 ![](/assets/posts/2026-04-09/7.png)
 *Power supply scheme for our target from the datasheet. Notice how all voltage supply besides flash access passes through the internal regulator before accessing core logic. Notice how there is also a BYPASS_REG that feeds into the regulator, which is not available on our package.*
 
