@@ -85,6 +85,9 @@ Luckily, the majority of chips have another option of pin we can measure. Most c
 
 Wouldn't it be better to target the core logic domain directly? Luckily for us, chips that feature internal regulators directly provide a feed. Even though the regulator is on-chip, its output needs external capacitance for stability and to respond to load variations. This provides a feed that is (mostly) our friend and a capacitor that (certainly) is our enemy. You will see this pin labelled names like VCAP (our target), VCORE, VDDCORE, VREG, and many others depending on vendor and chip. Note how on <a href="https://chipwhisperer.readthedocs.io/en/latest/chipwhisperer-target-cw308t/CW308T_STM32F/README.html#specifications">NewAE's Details for their STM32F based UFO target</a> when VCAP is present on an ST chip it serves as *"the output of the regulator and input to the internal core logic"*. These internal regulator pins are perfect targets, as they are singular, identifiable, outputs of VCORE.
 
+> Refer back to the [previous figure](#powerdomain). Note that VCAP_1/2 connect to the output of the internal regulator. Here, the regulator takes our decoupled VDD signals as input and outputs onto the VCAP pins, which then feeds kernel logic. In our target, when we "bypass" the regulator by feeding in a higher voltage, we are actually feeding this output path directly. Therefore we are not "bypassing" the regulator in a strict electric topology sense, but essentially regulating stops because its output is already set higher than what it's trying to regulate to. It is important to note these finer electric considerations when designing circuits so we can better understand what our capture setup is doing. We are not directly "turning off" the LDO, but rather, winning the voltage fight against the regulator node.
+{: .prompt-info }
+
 <a name="rtfm"></a>
 ### RTFM: Setup OSINT
 #### "OSINT is the epiphany of true pwn" - rondo
