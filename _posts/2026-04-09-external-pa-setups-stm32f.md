@@ -79,6 +79,7 @@ In most classic setups you might see someone lifting one of multiple VCC legs on
 
 Luckily, the majority of chips have another option of pin we can measure. Most chips run I/O and other peripherals at 3V3, but the internal core logic operates on a lower voltage domain, such as 1.2V. To be a bit bold, **almost every real mainstream embedded target you'll encounter in your hardware research is going do this**. This means while you may power your board with 3V3, there is an LDO within the silicon that brings the supplied voltage down to the regulated operating specification of the core logic.
 
+<a name="powerdomain"></a>
 ![](/assets/posts/2026-04-09/7.png)
 *Power supply scheme for our target from the datasheet. Notice how all voltage supply besides flash access passes through the internal regulator before accessing core logic. Notice how there is also a BYPASS_REG that feeds into the regulator, which is not available on our package.*
 
@@ -214,7 +215,7 @@ The process of iteratively testing values during the characterization phase (fin
 - The PSU load
 - The resistance value of the trimpot
 
-Set the PSU too low, and the internal regulator remains on. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO off, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't turn off the regulator (even though the PSU voltage is well beyond specified operating conditions).
+Set the PSU too low, and the internal regulator remains on. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO off, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't disable (or effectively disable, refer back to [the voltage domain diagram to see what I mean by that](#powerdomain)) the regulator (even though the PSU voltage is well beyond specified operating conditions).
 
 I recommend you start by disconnecting the PSU and powering the target. Measure between GND and CW Measure with your DMM in voltage mode. You should read a value close to the specified internal domain voltage from the datasheet.
 ![](/assets/posts/2026-04-09/20.jpeg)
