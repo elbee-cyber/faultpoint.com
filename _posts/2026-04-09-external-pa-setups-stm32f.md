@@ -218,7 +218,7 @@ The process of iteratively testing values during the characterization phase (fin
 - The PSU load
 - The resistance value of the trimpot
 
-Set the PSU too low, and the internal regulator remains on. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO bypassed, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't disable (or effectively disable, refer back to [the voltage domain diagram to see what I mean by that](#powerdomain)) the regulator (even though the PSU voltage is well beyond specified operating conditions).
+Set the PSU too low, and the internal regulator remains active. Set it too high and you will likely destroy the chip. We also want to find a resistance value that lets enough of the PSU current through so as to not only keep the target chip operating, but to keep it operating with its LDO bypassed, and furthermore, still be big enough so that we have clean traces. The larger the resistance value, the larger the voltage drop, and therefore, likelihood that the voltage won't turn off (or effectively turn off, refer back to [the voltage domain diagram to see what I mean by that](#powerdomain)) the regulator (even though the PSU voltage is well beyond specified operating conditions).
 
 I recommend you start by disconnecting the PSU and powering the target. Measure between GND and CW Measure with your DMM in voltage mode. You should read a value close to the specified internal domain voltage from the datasheet.
 ![](/assets/posts/2026-04-09/20.jpeg)
@@ -237,7 +237,7 @@ Congratulations. This post was meant to serve as a general guide on taking measu
 - Verification trigger signal is being spotted
 - Verification we are able to RST the Blackpill
 
-It is then followed by scope configuration where the number of samples and offset from trigger before capturing is defined along with the target clock. Here we use "extclk_x1", which will sync the scope with the clock signal we have on HS1. I then have 4 capture tests. Note the firmware password is `testpass`.
+It is then followed by scope configuration where the number of samples and offset from trigger before capturing is defined along with the target clock. Here we use "extclk_x1", which will sync the scope with the clock signal we have on HS1. I then have 6 capture tests. Note the firmware password is `testpass`.
 1. Repeat captures: The traces should nearly line up.
 2. Partial to complete password: The traces should spike away from the correct password trace and into the general loop depending which position the first incorrect character occurs.
 3. Visual trace outlier for first character ("t" should be the outlier).
@@ -251,14 +251,14 @@ The goal of this post is not to go over basic power analysis concepts, but inste
 <a name="proof"></a>
 ### Formally Proving SNR is Better with the STM32F Regulator Bypassed
 #### A Note on the STM32F401xC's LDO
-**The SPA attack provided here still works with the STM32F internal regulator activated.**
+**The SPA attack provided here still works with the STM32F internal regulator active.**
 So why does SPA work with the regulator still in control? Does SNR actually improve with the regulator bypassed at all? Will this proof section make my professor finally proud of me? We'll answer some of these questions definitively here. As it turns out, yes, for this specific target, there is enough noise that this attack works with the internal regulator still operating (at least for SPA). However, there does exist a significant SNR advantage with it bypassed. I tried to prove this empirically with a simple experiment. Recall (or note) the following SNR definition:
 
 ![](/assets/posts/2026-04-09/24.jpeg)
 *The first definition of SNR is all that is relevant.*
 
 The following is the experiment design I ran:
-- Regulator on and regulator bypassed control groups, each averages the results of the following over 10 iterations:
+- Regulator in-use and regulator overridden control groups, each averages the results of the following over 10 iterations:
     - Capture and average 20 reference traces
     - Capture and average 20 traces for the current character
     - Compute the SAD against averaged reference mean
