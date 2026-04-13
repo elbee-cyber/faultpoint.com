@@ -159,7 +159,7 @@ Before we design the measurement circuit, here are some quick tips we didn't use
 I recommend you flash your target with the firmware you want to perform the attack on (unless you'll be doing that using the 20-pin header) now. Also please do note that physically, we want the circuit to be as small as possible as to eliminate EMI, especially the connection that will be going from the VCAP pad and onto our external circuit as this will be the most sensitive and important. We will be implementing our own circuit on a protoboard that is connected to our newly exposed VCAP pad. Use a thin gauge wire for this connection. I ended up pulling a single copper strand from a jumper and soldering it carefuly to the pad (remember the pad connected to VCAP, not ground).
 
 ![](/assets/posts/2026-04-09/13.jpg)
-*If flux was applied, remember to apply remover solution to avoid bridging VCAP to the ground pad. Verify with your DMM this is not the case.*
+*If flux was applied, remember to apply remover solution to avoid bridging and shorting VCAP to ground. Verify with your DMM this is not the case.*
 
 Next I prefer to add connections on the protoboard for the actual Chipwhisperer 20-pin header before actually building the measurement circuit. For my setup, I ended up doing the following:
 - Blackpill 3V3 -> CW 3V3
@@ -170,14 +170,14 @@ Next I prefer to add connections on the protoboard for the actual Chipwhisperer 
 - Blackpill A9 (TX) -> TIO1
 - Blackpill A10 (RX) -> TIO2
 
-Next we can implement the measurement circuit. Remember we want to design this with minimal physical distance on the high side and low side of the shunt resistor. A couple subtle tips:
+Now we can implement the measurement circuit. Remember we want to design this with minimal physical distance on the high side and low side of the shunt resistor. A couple subtle tips:
 - My perfboard does not have connected rails. If this is the case for you, you can place single copper strands to create solder bridges (bridges won't hold over the perfboard silk no matter how big you make them, trust me).
 - Use an SMA connector and coax cable for the measurement signal to the Chipwhisperer, again to prevent EMI. This does not matter as much for the power supply line, but I did so here as well.
 - Measure out the path on your perfboard ahead of time so as to use the minimum amount of holes for your components and therefore minimal distance.
 - Trying to thread the VCAP strand through a thru-hole risks tearing it off the pad. Tape it against your hole and solder over it. Remove tape and cut the excess wire with an exacto knife or scalpel.
 - **All grounds must be shared with the Chipwhisperer to prevent ground loops. Your entire measurement circuit should share a ground with your Chipwhisperer, the CW will take measurements relative to its own ground. The PSU and blackpill should both have a path to Chipwhisperer GND.**
 
-Do note the PSU is being used to override the regulator, not power the 3V3 rail. This should be done by the Chipwhisperer or another power source. I also prefer using a trimpot instead of a plain resistor for the shunt measurement and I am not sure why it isn't talked about more. **Later in regulator sweeping you will see that we are going to be looking for a magic resistance value that offers the highest manageable resistance value, while not causing so much of a voltage drop that the internal regulator turns back on. A trimpot is useful here because you can continuously tune the resistance value via the wiper, without having to keep resoldering resistors.**
+Do note the PSU is being used to override the regulator, not power the 3V3 rail. This should be done by the Chipwhisperer or another power source. I also prefer using a trimpot instead of a plain resistor for the shunt measurement and I am not sure why it isn't talked about more. **Later in regulator sweeping you will see that we are going to be looking for a magic resistance value that offers the highest manageable resistance value, while not causing so much of a voltage drop that the feedback loop becomes so low that the regulator regulates. A trimpot is useful here because you can continuously tune the resistance value via the wiper, without having to keep resoldering resistors.**
 
 In general the measurement circuit looks like this: PSU -> 100nf Bypass -> Shunt Trimpot -> CW Measure -> Removed decap -> VCAP.
 
