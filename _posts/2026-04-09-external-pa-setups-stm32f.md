@@ -111,7 +111,7 @@ This is the most important section which I'm sure is unsurprising. When you are 
 
 In finding this information, we have found most of the details we will need to build our measurement circuit. There is of course additional information you're likely to find not mentioned here that will prove extremely useful to your setup, and I will mention some of the specifics for the STM32F401xC later. It is at this point I recommend you label a picture of your actual target pinout for your own sanity (trust). You can find pin 1 by identifying the dot and verify your VCC pins as well as the decoupling capacitors connected to them by using your DMM in continuity mode. Keep in mind the decoupling capacitors for VCAP and VDD will be found as physically close to the pin as possible to provide the best noise reduction.
 ![](/assets/posts/2026-04-09/12.png)
-*My labeled overly neat pinout, that I will be referencing from here on.*
+*My overly neat labelled pinout that I will be referencing from here on.*
 
 <a name="hsls"></a>
 ### High-side and Low-side
