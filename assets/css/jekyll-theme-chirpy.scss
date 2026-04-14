@@ -1,0 +1,21 @@
+@import "main";
+
+[data-mode="dark"],
+html[data-mode="dark"],
+:root[data-mode="dark"] {
+  --main-bg: #282828 !important;
+  --sidebar-bg: #1d2021 !important;
+  --link-color: #fabd2f !important;
+  --heading-color: #ebdbb2 !important;
+  --text-color: #bdae93 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --main-bg: #282828 !important;
+    --sidebar-bg: #1d2021 !important;
+    --link-color: #fabd2f !important;
+    --heading-color: #ebdbb2 !important;
+    --text-color: #bdae93 !important;
+  }
+}
