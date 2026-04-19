@@ -20,7 +20,7 @@ No UFO Board? No problem. A practical guide on creating capture setups for power
 # Table of Contents
 1. [Intro](#intro)
 2. [The Target](#target)
-3. [VCORE When Possible](#vcore)
+3. [Mapping the Power Domain](#vcore)
 4. [RTFM: Setup OSINT](#rtfm)
 5. [High-side and Low-side](#hsls)
 6. [SNR and Capacitors](#decap)
@@ -68,7 +68,7 @@ There are probably more than this, but I took a couple months hiatus from this p
 Eventually, I found <a href="https://forum.newae.com/t/cw308t-stm32f4-weird-spikes-in-power-trace/1148">this post on newae's forum</a> that looked similar to the situation I was dealing with (the traces from OP especially looked similar to the traces captured from setup #2) and I was able to note the following information relevant to my scenario. 1. My chip has an internal regulator which (at the time I thought) is likely significantly effecting SNR preventing all leakage. 2. While some variants of my chip feature a BYPASS_REG pin to disable the internal regulator directly, the package on the Blackpill does not support external power supplys. Of course, there are other ways to provide your own PSU and disable the internal regulator which we will talk about in-depth and which you can find more info on here: <a href="https://chipwhisperer.readthedocs.io/en/latest/cw_tips_tricks/advanced_usage/regulators.html">NewAE Targets with Internal Regulators</a>.
 
 <a name="vcore"></a>
-### VCORE When Possible
+### Mapping the Power Domain
 In most classic setups you might see someone lifting one of multiple VCC legs on an ATMega chip or Arduino-based devboard and shimming a shunt resistor directly off the leg. This does work and gets the job done perfectly for both power analysis and fault injection on basic microcontrollers. However for modern, complicated targets, there are a few issues to consider when you find yourself in this situation.
 1. If a chip has multiple VCC pins on the same domain sharing a power rail, putting a shunt on one of them might not catch all signal unless you find a VCC chokepoint for the power network which is easier said than done. Inserting a shunt on one leg might still allow current to flow freely and bypass your shunt through unshunted VCC pins, which might provide less of a current draw than is possible and less noise.
 
@@ -77,7 +77,7 @@ In most classic setups you might see someone lifting one of multiple VCC legs on
 
 2. VCC provides power to peripherals you don't care about. This is not an issue specifically to VCC, but to pins in general that don't route directly to a header. The farther you insert your shunt from the pin, the more peripheral noise from the rest of the device's components is introduced that you don't care about. We only care about reading core voltage and not about stuff like I/O, LEDs, USB, UART, etc. This is easy to avoid when you have a package that allows you to pull a physical leg up and tie a shunt, but for packages like ours (UFQFPN48, solder joint), this becomes much harder because we have to choose a spot on the devboard. Furthermore, choosing a spot on the devboard becomes a greater engineering effort as we consider both this factor of peripheral current, and electrical concerns such as cutting a trace or soldering more small components than we have to.
 
-Luckily, the majority of chips have another option of pin we can measure. Most chips run I/O and other peripherals at 3V3, but the internal core logic operates on a lower voltage domain, such as 1.nV.**Almost every real mainstream target you'll encounter running above low-MHz speeds in your hardware research is going to do this**. This means while you may power your board with 3V3, there is an LDO within the silicon that brings the supplied voltage down to the regulated operating specification of the core logic.
+Luckily, the majority of chips have another option of pin we can measure. Most chips run I/O and other peripherals at 3V3, but the internal core logic operates on a lower voltage domain, such as 1.2V. To be a bit bold, **every real mainstream embedded target you'll encounter in your hardware research is going to do this**. This means while you may power your board with 3V3, there is an LDO within the silicon that brings the supplied voltage down to the regulated operating specification of the core logic.
 
 <a name="powerdomain"></a>
 <br>
@@ -86,7 +86,7 @@ Luckily, the majority of chips have another option of pin we can measure. Most c
 
 Wouldn't it be better to target the core logic domain directly? Luckily for us, chips that feature internal regulators directly provide a feed. Even though the regulator is on-chip, its output needs external capacitance for stability and to respond to load variations. This provides a feed that is (mostly) our friend and a capacitor that (certainly) is our enemy. You will see this pin labelled names like VCAP (our target), VCORE, VDDCORE, VREG, and many others depending on vendor and chip. Note how on <a href="https://chipwhisperer.readthedocs.io/en/latest/chipwhisperer-target-cw308t/CW308T_STM32F/README.html#specifications">NewAE's Details for their STM32F based UFO target</a> when VCAP is present on an ST chip it serves as *"the output of the regulator and input to the internal core logic"*. These internal regulator pins are perfect targets, as they are singular, identifiable, outputs of VCORE.
 
-> Refer back to the [previous figure](#powerdomain). Note that VCAP_1/2 connects to the output of the internal regulator. Here, the regulator takes our decoupled VDD signals as input and outputs onto the VCAP lines, which is a feedback loop to the regulator. In our target, when we "bypass" the regulator by feeding in a higher voltage, we are actually feeding this output path directly. Therefore we are not "bypassing" the regulator in a strict electric topology sense, but essentially regulating stops because its output is already set higher than what it's trying to regulate to. It is important to note these finer electric considerations when designing circuits so we can better understand what our capture setup is doing. We are not directly "turning off" the LDO, but rather, winning the voltage fight against the regulator node and as a result, the regulator sees this in the feedback loop and does nothing.
+> Refer back to the [previous figure](#powerdomain). Note that VCAP_1/2 connect to the output of the internal regulator. Here, the regulator takes our decoupled VDD signals as input and outputs onto the VCAP pins, which then feeds back. In our target, when we "bypass" the regulator by feeding in a higher voltage, we are actually feeding this output path directly. Therefore we are not "bypassing" the regulator in a strict electric topology sense, but essentially regulating stops because its output is already set higher than what it's trying to regulate to. It is important to note these finer electric considerations when designing circuits so we can better understand what our capture setup is doing. We are not directly "turning off" the LDO, but rather, winning the voltage fight against the regulator node and as a result, the regulator sees this in the feedback loop and does nothing.
 {: .prompt-info }
 
 <a name="rtfm"></a>
@@ -141,7 +141,7 @@ We already know quite a bit about our target's internal voltage regulator. We al
 *Perhaps the most useful diagram in this post: https://chipwhisperer.readthedocs.io/en/latest/cw_tips_tricks/advanced_usage/regulators.html*
 
 ![](/assets/posts/2026-04-09/16.png)
-*The factory, regulator off, BYPASS_REG is not present on our target, but the datasheet specifies we can supply voltage through the VCAP pins. It also confirms the external voltage supplied should be scaled to the expected internal operating voltage as it bypasses the regulator entirely. In conclusion, we should do that, so naturally we won't.*
+*The factory, regulator off, BYPASS_REG is not present on our target, but the datasheet specifies we can supply voltage through the VCAP pins. It also confirms the external voltage supplied is should be scaled to the expected internal operating voltage as it bypasses the regulator entirely. In conclusion, we should do that, so naturally we won't.*
 
 This confirms that if we provide a slightly higher voltage to the VCAP output, the regulator will not operate since it is being fed a voltage that exceeds its threshold from the VCAP feedback loop. How do we find this perfect voltage without permanently damaging the chip? I'll go over this in a simple method called "regulator sweeping". Although I just made up the name for this post, I am confident it has been done a thousand times. We now have a way to bypass the regulator and have enough information to start drafting (and I recommend you draft first) a measurement circuit. The most important part is the VCAP pad where the 2.2uf decoupling capacitor used to be. It will be responsible for the following:
 - High side: PSU -> 100nf bypass -> Shunt
@@ -157,7 +157,7 @@ Before we design the measurement circuit, here are some quick tips we didn't use
 ![](/assets/posts/2026-04-09/22.png)
 *Verify visually that C8 is the VCAP decap. https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1*
 
-I recommend you flash your target with the firmware you want to perform the attack on (unless you'll be doing that using the 20-pin header) now. Also please do note that physically, we want the circuit to be as small as possible as to eliminate EMI, especially the connection that will be going from the VCAP pad and onto our external circuit as this will be the most sensitive and important. We will be implementing our own circuit on a protoboard that is connected to our newly exposed VCAP pad. Use a thin gauge wire for this connection. I ended up pulling a single copper strand from a jumper and soldering it carefully to the pad (remember the pad connected to VCAP, not ground).
+I recommend you flash your target with the firmware you want to perform the attack on (unless you'll be doing that using the 20-pin header) now. Also please do note that physically, we want the circuit to be as small as possible as to eliminate EMI, especially the connection that will be going from the VCAP pad and onto our external circuit as this will be the most sensitive and important. We will be implementing our own circuit on a protoboard that is connected to our newly exposed VCAP pad. Use a thin gauge wire for this connection. I ended up pulling a single copper strand from a jumper and soldering it carefuly to the pad (remember the pad connected to VCAP, not ground).
 
 ![](/assets/posts/2026-04-09/13.jpg)
 *If flux was applied, remember to apply remover solution to avoid bridging and shorting VCAP to ground. Verify with your DMM this is not the case.*
