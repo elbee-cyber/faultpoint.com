@@ -8,7 +8,7 @@ tag: [
     "vcap","snr","low side measurement"
 ]
 
-categories: ["Hardware"]
+categories: ["Hardware Attacks"]
 redirect_from:
     - /posts/unlisted-31d6cfe0d16ae931b73c59d7e0c089c0
 image: /assets/posts/2026-04-09/rand1.jpeg

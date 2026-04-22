@@ -2,9 +2,9 @@
 title: "'You Left this on the Internet?' Finding 8 Zero Days in the WNR854T for DistrictCon Junkyard"
 date: 2025-03-25
 description: "How my university club dumpster dived eight CVEs for a year-0 conference including WAN RCE and NVRAM persistence."
-tag: ["firmware rev","embedded"]
+tag: ["firmware rev","embedded","cves","upnp","httpd"]
 authors: [draz,elbee,vwing]
-categories: ["Vulnerability Discovery"]
+categories: ["Embedded VR"]
 redirect_from:
     - /post/2025-03-25-8-cves-on-the-wnr854t-junkyard/
     - /post/2025-03-25-8-cves-on-the-wnr854t-junkyard/#802

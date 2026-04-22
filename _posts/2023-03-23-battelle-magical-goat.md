@@ -2,7 +2,7 @@
 title: "Feed the Magical Goat (Battelle)"
 date: 2023-03-23
 description: "Reversing challenge from Battelle showcasing angr's file simulation feature."
-tag: ["angr","reversing","CTF","file-sim"]
+tag: ["angr","reversing","CTF","file-sim","concolic analysis","symbolic execution"]
 categories: ["CTF"]
 image: /assets/posts/2023-03-23/Screenshot_8.png
 ---

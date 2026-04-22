@@ -1,9 +1,9 @@
 ---
-title: "Cracking the DEFCON 30 Badge Firmware"
+title: "Extracting and Cracking the DEFCON 30 Badge Firmware"
 date: 2022-11-22
 description: "Flash extraction and reversing of the DC30 badge firmware."
-tag: ["firmware rev","chip extraction","badge"]
-categories: ["CTF","Embedded"]
+tag: ["firmware rev","chip extraction","badge","defcon badge","chip-off","SPI","binary blob","rp2040","rp2b2","badge challenge"]
+categories: ["Firmware Extraction"]
 image: /assets/posts/2022-11-22/Screenshot_2.png
 ---
 Extracting and reversing the firmware of the DC30 badge to beat the badge challenge!

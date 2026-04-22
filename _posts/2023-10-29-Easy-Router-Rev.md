@@ -2,8 +2,8 @@
 title: "Easy Router Rev"
 date: 2023-10-29
 description: "Reverse engineering custom protocols on a router."
-tag: ["firmware rev","embedded"]
-categories: ["Random Research"]
+tag: ["firmware rev","embedded","uart","protocol rev"]
+categories: ["Embedded VR"]
 image: /assets/posts/2023-10-29/6.png
 ---
 

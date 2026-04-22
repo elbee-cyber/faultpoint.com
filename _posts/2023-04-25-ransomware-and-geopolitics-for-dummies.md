@@ -2,7 +2,7 @@
 title: "International Implications of Ransomware for Dummies"
 date: 2023-04-25
 description: "Modern ransomware attacks often greatly affect civilian life and government operations, it is a geopolitical issue."
-tag: ["non-technical"]
+tag: ["non-technical","ransomware","geopolitics","war"]
 categories: ["Non-technical"]
 image: /assets/posts/2023-04-25/pipeline.jpeg
 ---

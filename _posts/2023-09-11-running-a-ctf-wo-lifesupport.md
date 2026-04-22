@@ -2,8 +2,8 @@
 title: "Running a CTF that Outlasts a Bag of Popcorn"
 date: 2023-09-11
 description: "Tales and experiences from running PatriotCTF 2023."
-tag: ["infrastructure","aws","docker","CTF"]
-categories: ["Infrastructure", "CTF"]
+tag: ["infrastructure","aws","docker","CTF","container management"]
+categories: ["CTF"]
 image: /assets/posts/2023-09-11/2.png
 ---
 

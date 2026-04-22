@@ -2,7 +2,7 @@
 title: "Return to Sigreturn"
 date: 2023-09-11
 description: "A really simple writeup for an srop challenge."
-tag: ["CTF","srop"]
+tag: ["CTF","srop","sigreturn","ret2mprotect","ret2sigreturn"]
 categories: ["CTF"]
 image: /assets/posts/2023-09-11-1/9.png
 ---
